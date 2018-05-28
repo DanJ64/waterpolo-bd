@@ -145,12 +145,14 @@ public class Equipo {
             todoOk = false;
             ex.printStackTrace();
         }
+        
         /*
         resultado.add(
                 new Equipo(1, "Halcones calvos", "Getafe", "España"));
         resultado.add(
                 new Equipo(2, "Dumma den som läser den", "Visby", "Suecia"));
         */
+        
         return resultado;
 
     }
