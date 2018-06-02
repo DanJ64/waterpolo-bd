@@ -79,9 +79,9 @@ public class Equipo {
         try (Connection conn = ConexionBd.obtener()) {
             String sql = "INSERT INTO equipo (nombre, ciudad, pais) VALUES (?,?,?)";
             try (PreparedStatement stmt = conn.prepareStatement(sql);) {
-                stmt.setString(1, this.getNombre());
-                stmt.setString(2, this.getCiudad());
-                stmt.setString(3, this.getPais());
+                stmt.setString(1, getNombre());
+                stmt.setString(2, getCiudad());
+                stmt.setString(3, getPais());
                 stmt.executeUpdate();
             }
         } catch (SQLException ex) {

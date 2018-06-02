@@ -94,11 +94,12 @@ public class Jugador {
     public boolean create() {
         boolean todoOk = true;
         try (Connection conn = ConexionBd.obtener()) {
-            String sql = "INSERT INTO jugador (nombre, apellido, edad) VALUES (?,?,?)";
+            String sql = "INSERT INTO jugador (nombre, apellido, edad, idequipo) VALUES (?,?,?)";
             try (PreparedStatement stmt = conn.prepareStatement(sql);) {
-                stmt.setString(1, this.getNombre());
-                stmt.setString(2, this.getApellidos());
-                stmt.setInt(3, this.getEdad());
+                stmt.setString(1, getNombre());
+                stmt.setString(2, getApellidos());
+                stmt.setInt(3, getEdad());
+                stmt.setInt(4, getIdEquipo());
                 stmt.executeUpdate();
             }
         } catch (SQLException ex) {
