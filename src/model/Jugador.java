@@ -141,7 +141,7 @@ public class Jugador {
                 stmt.setString(2, getApellidos());
                 stmt.setInt(3, getEdad());
                 stmt.setInt(4, getIdEquipo());
-                stmt.setInt(5, getIdEquipo());
+                stmt.setInt(5, getId());
 
                 stmt.executeUpdate();
             }
