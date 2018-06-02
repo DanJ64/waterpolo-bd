@@ -21,9 +21,9 @@ public class Jugador {
     private int idEquipo;
 
     public Jugador() {
-        
+
     }
-    
+
     public Jugador(int id) {
         this.id = id;
     }
@@ -69,6 +69,14 @@ public class Jugador {
         return edad;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public void setEdad(int edad) {
         this.edad = edad;
     }
@@ -84,19 +92,80 @@ public class Jugador {
     // --------- OPERACIONES BD ----------------------------------------
     // ---------- CRUD BÁSICO
     public boolean create() {
-        return true;
+        boolean todoOk = true;
+        try (Connection conn = ConexionBd.obtener()) {
+            String sql = "INSERT INTO jugador (nombre, apellido, edad) VALUES (?,?,?)";
+            try (PreparedStatement stmt = conn.prepareStatement(sql);) {
+                stmt.setString(1, this.getNombre());
+                stmt.setString(2, this.getApellidos());
+                stmt.setInt(3, this.getEdad());
+                stmt.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            todoOk = false;
+            ex.printStackTrace();
+        }
+        return todoOk;
     }
 
     public boolean retrieve() {
-        return true;
+        boolean todoOk = true;
+        try (Connection conn = ConexionBd.obtener()) {
+            String sql = "SELECT nombre, apellido, edad, idequipo FROM equipo WHERE id = ?"
+                    + "VALUES (?, ?, ?)";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, getId());
+                try (ResultSet rs = stmt.executeQuery(sql)) {
+                    rs.next();
+                    setNombre(rs.getString("nombre"));
+                    setApellidos(rs.getString("apellido"));
+                    setEdad(rs.getInt("edad"));
+                    setIdEquipo(rs.getInt("idequipo"));
+                }
+            }
+
+        } catch (SQLException ex) {
+            todoOk = false;
+        }
+        return todoOk;
     }
 
     public boolean update() {
-        return true;
+        boolean todoOk = true;
+        try (Connection conn = ConexionBd.obtener()) {
+            String sql = "UPDATE equipo SET nombre = ?, apellido = ?, edad = ? ,"
+                    + " idequipo = ? " + "WHERE id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                
+                stmt.setString(1, getNombre());
+                stmt.setString(2, getApellidos());
+                stmt.setInt(3, getEdad());
+                stmt.setInt(4, getIdEquipo());
+                stmt.setInt(5, getIdEquipo());
+
+                stmt.executeUpdate();
+            }
+
+        } catch (SQLException ex) {
+            todoOk = false;
+        }
+        return todoOk;
     }
 
     public boolean delete() {
-        return true;
+        boolean todoOk = true;
+        try (Connection conn = ConexionBd.obtener()) {
+            try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM "
+                    + "jugador WHERE id = ?")) {
+                
+                stmt.setInt(1, getId());
+                
+                stmt.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            todoOk = false;
+        }
+        return todoOk;
     }
 
     // ----------- Otras, de clase, no relacionadas con ÉSTE (this) objeto
