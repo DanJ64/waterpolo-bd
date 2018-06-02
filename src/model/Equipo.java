@@ -76,15 +76,15 @@ public class Equipo {
     // ---------- CRUD BÁSICO
     public boolean create() {
         boolean todoOk = true;
-        try(Connection conn = ConexionBd.obtener()){
+        try (Connection conn = ConexionBd.obtener()) {
             String sql = "INSERT INTO equipo (nombre, ciudad, pais) VALUES (?,?,?)";
-            try(PreparedStatement stmt = conn.prepareStatement(sql);){
+            try (PreparedStatement stmt = conn.prepareStatement(sql);) {
                 stmt.setString(1, this.getNombre());
                 stmt.setString(2, this.getCiudad());
                 stmt.setString(3, this.getPais());
                 stmt.executeUpdate();
             }
-        }catch (SQLException ex){
+        } catch (SQLException ex) {
             todoOk = false;
             ex.printStackTrace();
         }
@@ -92,20 +92,61 @@ public class Equipo {
     }
 
     public boolean retrieve() {
-        // POR HACER
-        setId(33);
-        setNombre("Equipo ejemplo");
-        setCiudad("Ciudad ejemplo");
-        setPais("Pais ejemplo");
-        return true;
+        boolean todoOk = true;
+        try (Connection conn = ConexionBd.obtener()) {
+            String sql = "SELECT nombre, ciudad, pais FROM equipo WHERE id = ?"
+                    + "VALUES (?, ?, ?)";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, getId());
+                try (ResultSet rs = stmt.executeQuery(sql)) {
+                    rs.next();
+                    setNombre(rs.getString("nombre"));
+                    setCiudad(rs.getString("ciudad"));
+                    setPais(rs.getString("pais"));
+                }
+            }
+
+        } catch (SQLException ex) {
+            todoOk = false;
+        }
+        return todoOk;
     }
 
     public boolean update() {
-        return true;
+        boolean todoOk = true;
+        try (Connection conn = ConexionBd.obtener()) {
+            String sql = "UPDATE equipo SET nombre = ?, ciudad = ?, pais = ? WHERE id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                
+                stmt.setString(1, getNombre());
+                stmt.setString(2, getCiudad());
+                stmt.setString(3, getPais());
+                stmt.setInt(4, getId());
+
+                stmt.executeUpdate();
+            }
+
+        } catch (SQLException ex) {
+            todoOk = false;
+        }
+        return todoOk;
     }
 
     public boolean delete() {
-        return true;
+        boolean todoOk = true;
+        try (Connection conn = ConexionBd.obtener()) {
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "DELETE FROM equipo WHERE id = ?")) {
+                
+                stmt.setInt(1, getId());
+                
+                stmt.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            todoOk = false;
+            ex.printStackTrace();
+        }
+        return todoOk;
     }
 
     // ----------- Otras, de instancia, relacionadas con la fk
@@ -129,19 +170,19 @@ public class Equipo {
         // POR HACER
         List<Equipo> resultado = null;
         boolean todoOk = true;
-        try(Connection conn = ConexionBd.obtener();){
+        try (Connection conn = ConexionBd.obtener();) {
             resultado = new ArrayList<>();
             String sql = "SELECT id, nombre, ciudad, pais FROM equipo";
-            try(PreparedStatement stmt = conn.prepareStatement(sql);){
-                try(ResultSet rs = stmt.executeQuery();){
-                    while(rs.next()){
+            try (PreparedStatement stmt = conn.prepareStatement(sql);) {
+                try (ResultSet rs = stmt.executeQuery();) {
+                    while (rs.next()) {
                         resultado.add(new Equipo(
                                 rs.getInt("id"), rs.getString("nombre"),
                                 rs.getString("ciudad"), rs.getString("pais")));
                     }
                 }
             }
-        }catch (SQLException ex){
+        } catch (SQLException ex) {
             todoOk = false;
             ex.printStackTrace();
         }
@@ -150,7 +191,7 @@ public class Equipo {
                 new Equipo(1, "Halcones calvos", "Getafe", "España"));
         resultado.add(
                 new Equipo(2, "Dumma den som läser den", "Visby", "Suecia"));
-        */
+         */
         return resultado;
 
     }
