@@ -4,7 +4,9 @@
  * and open the template in the editor.
  */
 package app;
+
 import model.*;
+
 /**
  *
  * @author victor
@@ -13,17 +15,18 @@ public class EquipoJDialog extends javax.swing.JDialog {
 
     public static int ACCION_CANCELAR = -1;
     public static int ACCION_GUARDAR = 0;
-    
+
     private Equipo equipo;
     private int accion;
+
     /**
      * Creates new form EquipoJDialog
      */
-        
+
     public Equipo getEquipo() {
         return equipo;
     }
-   
+
     // El botón apretado.
     public int getAccion() {
         return accion;
@@ -31,13 +34,12 @@ public class EquipoJDialog extends javax.swing.JDialog {
 
     // Recoge en el modelo los cambios en la presentación
     private void actualizar() {
-        jLabelId.setText(String.valueOf(equipo.getId()));
-        jTextFieldNombre.setText(equipo.getNombre());
-        jTextFieldCiudad.setText(equipo.getCiudad());
-        jTextFieldPais.setText(equipo.getPais());
+        jLabelId.setText(String.valueOf(getEquipo().getId()));
+        jTextFieldNombre.setText(getEquipo().getNombre());
+        jTextFieldCiudad.setText(getEquipo().getCiudad());
+        jTextFieldPais.setText(getEquipo().getPais());
     }
 
-    
     // Constructor modificado para ser siempre modal, y aceptar un equipo como
     // parámetro
     public EquipoJDialog(java.awt.Frame parent, Equipo equipo) {
@@ -155,11 +157,16 @@ public class EquipoJDialog extends javax.swing.JDialog {
 
     private void jButtonGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGuardarActionPerformed
         boolean exito;
-        if (equipo.getId() < 1) {
-           exito = equipo.create();
+        getEquipo().setNombre(jTextFieldNombre.getText());
+        getEquipo().setCiudad(jTextFieldCiudad.getText());
+        getEquipo().setPais(jTextFieldPais.getText());
+
+        if (getEquipo().getId() < 1) {
+            exito = getEquipo().create();
         } else {
-           exito = equipo.update();
+            exito = getEquipo().update();
         }
+
         this.accion = ACCION_GUARDAR;
         this.setVisible(false);
     }//GEN-LAST:event_jButtonGuardarActionPerformed
@@ -167,7 +174,6 @@ public class EquipoJDialog extends javax.swing.JDialog {
     private void jButtonCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCerrarActionPerformed
         this.setVisible(false);
     }//GEN-LAST:event_jButtonCerrarActionPerformed
-
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -182,6 +188,5 @@ public class EquipoJDialog extends javax.swing.JDialog {
     private javax.swing.JTextField jTextFieldNombre;
     private javax.swing.JTextField jTextFieldPais;
     // End of variables declaration//GEN-END:variables
-
 
 }

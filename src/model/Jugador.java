@@ -94,7 +94,7 @@ public class Jugador {
     public boolean create() {
         boolean todoOk = true;
         try (Connection conn = ConexionBd.obtener()) {
-            String sql = "INSERT INTO jugador (nombre, apellido, edad, idequipo) VALUES (?,?,?)";
+            String sql = "INSERT INTO jugador (nombre, apellidos, edad, idequipo) VALUES (?,?,?, ?)";
             try (PreparedStatement stmt = conn.prepareStatement(sql);) {
                 stmt.setString(1, getNombre());
                 stmt.setString(2, getApellidos());
@@ -112,14 +112,14 @@ public class Jugador {
     public boolean retrieve() {
         boolean todoOk = true;
         try (Connection conn = ConexionBd.obtener()) {
-            String sql = "SELECT nombre, apellido, edad, idequipo FROM equipo WHERE id = ?"
-                    + "VALUES (?, ?, ?)";
+            String sql = "SELECT nombre, apellidos, edad, idequipo FROM equipo WHERE id = ?"
+                    + "VALUES (?, ?, ?, ?)";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setInt(1, getId());
                 try (ResultSet rs = stmt.executeQuery(sql)) {
                     rs.next();
                     setNombre(rs.getString("nombre"));
-                    setApellidos(rs.getString("apellido"));
+                    setApellidos(rs.getString("apellidos"));
                     setEdad(rs.getInt("edad"));
                     setIdEquipo(rs.getInt("idequipo"));
                 }
@@ -134,10 +134,10 @@ public class Jugador {
     public boolean update() {
         boolean todoOk = true;
         try (Connection conn = ConexionBd.obtener()) {
-            String sql = "UPDATE equipo SET nombre = ?, apellido = ?, edad = ? ,"
+            String sql = "UPDATE equipo SET nombre = ?, apellidos = ?, edad = ? ,"
                     + " idequipo = ? " + "WHERE id = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                
+
                 stmt.setString(1, getNombre());
                 stmt.setString(2, getApellidos());
                 stmt.setInt(3, getEdad());
@@ -158,9 +158,9 @@ public class Jugador {
         try (Connection conn = ConexionBd.obtener()) {
             try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM "
                     + "jugador WHERE id = ?")) {
-                
+
                 stmt.setInt(1, getId());
-                
+
                 stmt.executeUpdate();
             }
         } catch (SQLException ex) {
@@ -175,9 +175,56 @@ public class Jugador {
         Class: 18 o más y menos de 26.
         Master: 26 años o más. */
 
+        String sql = "";
+
+        if (!busqueda.equals("") && esJunior) {
+            sql = "SELECT id, nombre, apellidos, edad, idequipo FROM jugador "
+                    + "WHERE edad < 18 AND nombre LIKE lower(?) "
+                    + "OR apellidos LIKE lower(?)";
+        } else if (!busqueda.equals("") && esClass) {
+            sql = "SELECT id, nombre, apellidos, edad, idequipo FROM jugador "
+                    + "WHERE edad >= 18 AND edad < 26 AND nombre LIKE lower(?) "
+                    + "OR apellidos LIKE lower(?)";
+        } else if (!busqueda.equals("") && esMaster) {
+            sql = "SELECT id, nombre, apellidos, edad, idequipo FROM jugador "
+                    + "WHERE edad >= 26 AND nombre LIKE lower(?) OR apellidos "
+                    + "LIKE lower(?)";
+        } else if (busqueda.equals("") && esJunior) {
+            sql = "SELECT id, nombre ,apellidos, edad, idequipo FROM jugador "
+                    + "WHERE edad < 18";
+        } else if (busqueda.equals("") && esClass) {
+            sql = "SELECT id, nombre ,apellidos, edad, idequipo FROM jugador "
+                    + "WHERE edad >= 18 AND edad < 26";
+        } else if (busqueda.equals("") && esMaster) {
+            sql = "SELECT id, nombre ,apellidos, edad, idequipo FROM jugador "
+                    + "WHERE edad >= 26";
+        } else if (!busqueda.equals("")) {
+            sql = "SELECT id, nombre, apellidos, edad, idequipo FROM jugador "
+                    + "WHERE nombre LIKE lower(?) OR apellidos LIKE lower(?)";
+        } else if (busqueda.equals("")) {
+            sql = "SELECT id, nombre, apellidos, edad, idequipo FROM jugador";
+        }
+
         List<Jugador> resultado = new ArrayList<>();
-        resultado.add(new Jugador("Paco", "López", 19));
-        resultado.add(new Jugador("Luisa", "Martínez", 21));
+
+        try (Connection conn = ConexionBd.obtener()) {
+            try (PreparedStatement stmt = conn.prepareStatement(sql);) {
+                if (!busqueda.equals("")) {
+                    stmt.setString(1, '%' + busqueda + '%');
+                    stmt.setString(2, '%' + busqueda + '%');
+                }
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        resultado.add(new Jugador(rs.getInt(1), rs.getString(2),
+                                rs.getString(3), rs.getInt(4), rs.getInt(5)));
+                    }
+                }
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
         return resultado;
     }
 }

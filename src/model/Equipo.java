@@ -117,7 +117,7 @@ public class Equipo {
         try (Connection conn = ConexionBd.obtener()) {
             String sql = "UPDATE equipo SET nombre = ?, ciudad = ?, pais = ? WHERE id = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                
+
                 stmt.setString(1, getNombre());
                 stmt.setString(2, getCiudad());
                 stmt.setString(3, getPais());
@@ -137,9 +137,9 @@ public class Equipo {
         try (Connection conn = ConexionBd.obtener()) {
             try (PreparedStatement stmt = conn.prepareStatement(
                     "DELETE FROM equipo WHERE id = ?")) {
-                
+
                 stmt.setInt(1, getId());
-                
+
                 stmt.executeUpdate();
             }
         } catch (SQLException ex) {
@@ -151,11 +151,21 @@ public class Equipo {
 
     // ----------- Otras, de instancia, relacionadas con la fk
     public List<Jugador> getJugadores() {
-        // POR HACER.
         List<Jugador> resultado = new ArrayList<>();
-        resultado.add(new Jugador(1, "Paco", "López", 19));
-        resultado.add(new Jugador(2, "Luisa", "Martínez", 21));
-        return resultado;
+        
+        try (Connection conn = ConexionBd.obtener()) {
+            PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT nombre, apellidos, edad FROM jugador where idequipo = ?");
+            stmt.setInt(1, getId());
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    resultado.add(new Jugador(rs.getString(1), rs.getString(2), rs.getInt(3)));
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+return resultado;
     }
 
     // ----------- Otras, de clase, no relacionadas con ÉSTE (this) objeto
@@ -172,8 +182,29 @@ public class Equipo {
         boolean todoOk = true;
         try (Connection conn = ConexionBd.obtener();) {
             resultado = new ArrayList<>();
-            String sql = "SELECT id, nombre, ciudad, pais FROM equipo";
+            String sql;
+
+            if (busqueda.equals("")) {
+                sql = "SELECT id, nombre, ciudad, pais FROM equipo";
+            } else {
+                sql = "SELECT id, nombre ,ciudad , pais FROM equipo WHERE nombre LIKE lower(?) OR ciudad LIKE lower(?)"
++ "OR pais LIKE lower(?)";
+            }
+
+            if (orden == ORDEN_NOMBRE) {
+                sql = sql + " ORDER BY nombre";
+            } else {
+                sql = sql + " ORDER BY pais";
+            }
+
             try (PreparedStatement stmt = conn.prepareStatement(sql);) {
+
+                if (!busqueda.equals("")) {
+                    stmt.setString(1, '%' + busqueda + '%');
+                    stmt.setString(2, '%' + busqueda + '%');
+                    stmt.setString(3, '%' + busqueda + '%');
+                }
+
                 try (ResultSet rs = stmt.executeQuery();) {
                     while (rs.next()) {
                         resultado.add(new Equipo(
@@ -186,12 +217,7 @@ public class Equipo {
             todoOk = false;
             ex.printStackTrace();
         }
-        /*
-        resultado.add(
-                new Equipo(1, "Halcones calvos", "Getafe", "España"));
-        resultado.add(
-                new Equipo(2, "Dumma den som läser den", "Visby", "Suecia"));
-         */
+
         return resultado;
 
     }
