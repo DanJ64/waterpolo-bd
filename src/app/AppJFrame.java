@@ -67,6 +67,7 @@ public class AppJFrame extends javax.swing.JFrame {
                     j.getNombre(), j.getApellidos(), j.getEdad(), j.getIdEquipo()));
             listaIdJugadores.add(j.getId());
         }
+        jListJugadoresEquipo.setModel(listModelJugador);
         jListJugadores.setModel(listModelJugador);
     }
 

@@ -94,7 +94,7 @@ public class Jugador {
     public boolean create() {
         boolean todoOk = true;
         try (Connection conn = ConexionBd.obtener()) {
-            String sql = "INSERT INTO jugador (nombre, apellidos, edad, idequipo) VALUES (?,?,?, ?)";
+            String sql = "INSERT INTO jugador (nombre, apellidos, edad, idequipo) VALUES (?,?,?,?)";
             try (PreparedStatement stmt = conn.prepareStatement(sql);) {
                 stmt.setString(1, getNombre());
                 stmt.setString(2, getApellidos());
