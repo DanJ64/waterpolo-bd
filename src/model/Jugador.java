@@ -134,7 +134,7 @@ public class Jugador {
     public boolean update() {
         boolean todoOk = true;
         try (Connection conn = ConexionBd.obtener()) {
-            String sql = "UPDATE equipo SET nombre = ?, apellidos = ?, edad = ? ,"
+            String sql = "UPDATE jugador SET nombre = ?, apellidos = ?, edad = ? ,"
                     + " idequipo = ? " + "WHERE id = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -149,6 +149,7 @@ public class Jugador {
 
         } catch (SQLException ex) {
             todoOk = false;
+                ex.printStackTrace();
         }
         return todoOk;
     }
