@@ -44,7 +44,7 @@ public class JugadorJDialog extends javax.swing.JDialog {
             listaIdEquipos.add(e.getId());
         }
         jComboBox1.setSelectedIndex(listaIdEquipos.indexOf(getJugador().getIdEquipo()));
-
+        
         if (jugador.getId() > 0) {
             jTextFieldEdad.setEnabled(false);
         }
@@ -187,7 +187,14 @@ public class JugadorJDialog extends javax.swing.JDialog {
         } else {
             todoOk = getJugador().update();
         }
-        this.accion = ACCION_GUARDAR;
+        
+        if(todoOk){
+            this.accion = ACCION_GUARDAR;
+        }else{
+            this.accion = ACCION_CANCELAR;
+        }
+        
+        
         this.setVisible(false);
     }//GEN-LAST:event_jButtonGuardarActionPerformed
 
