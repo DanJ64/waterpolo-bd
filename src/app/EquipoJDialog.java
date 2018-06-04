@@ -156,18 +156,22 @@ public class EquipoJDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGuardarActionPerformed
-        boolean exito;
+        boolean todoOk;
         getEquipo().setNombre(jTextFieldNombre.getText());
         getEquipo().setCiudad(jTextFieldCiudad.getText());
         getEquipo().setPais(jTextFieldPais.getText());
 
         if (getEquipo().getId() < 1) {
-            exito = getEquipo().create();
+            todoOk = getEquipo().create();
         } else {
-            exito = getEquipo().update();
+            todoOk = getEquipo().update();
         }
 
-        this.accion = ACCION_GUARDAR;
+         if(todoOk){
+            this.accion = ACCION_GUARDAR;
+        }else{
+            this.accion = ACCION_CANCELAR;
+        }
         this.setVisible(false);
     }//GEN-LAST:event_jButtonGuardarActionPerformed
 
